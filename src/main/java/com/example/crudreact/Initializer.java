@@ -20,7 +20,7 @@ public class Initializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         Stream.of("Sherlock Holmes", "John Watson").forEach(name -> repository.save(new Group(name)));
         Group group = repository.findByName("Sherlock Holmes");
 

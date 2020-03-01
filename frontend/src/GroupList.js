@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
+import { instanceOf } from 'prop-types';
+import { Cookies } from 'react-cookie';
 
 class GroupList extends Component {
 
@@ -14,13 +16,14 @@ class GroupList extends Component {
     componentDidMount() {
         this.setState({isLoading: true});
 
-        fetch('api/groups')
+        fetch('api/groups', {credentials: 'include'})
             .then(response => response.json())
-            .then(data => this.setState({groups: data, isLoading: false}));
+            .then(data => this.setState({groups: data, isLoading: false}))
+            .catch(() => this.props.history.push('/'));
     }
 
     async remove(id) {
-        await fetch(`/api/groups/${id}`, {
+        await fetch(`/api/group/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -29,19 +32,19 @@ class GroupList extends Component {
         }).then(() => {
             let updatedGroups = [...this.state.groups].filter(i => i.id !== id);
             this.setState({groups: updatedGroups});
-        })
+        });
     }
 
     render() {
         const {groups, isLoading} = this.state;
 
         if (isLoading) {
-            return <p>Loading...</p>
+            return <p>Loading...</p>;
         }
 
         const groupList = groups.map(group => {
             const address = `${group.address || ''} ${group.city || ''} ${group.state || ''}`;
-            return <tr key={groups.id}>
+            return <tr key={group.id}>
                 <td style={{whiteSpace: 'nowrap'}}>{group.name}</td>
                 <td>{address}</td>
                 <td>{group.events.map(event => {
@@ -67,7 +70,7 @@ class GroupList extends Component {
                     <div className="float-right">
                         <Button color="success" tag={Link} to="/groups/new">Add Group</Button>
                     </div>
-                    <h3>Groups</h3>
+                    <h3>My JUG Tour</h3>
                     <Table className="mt-4">
                         <thead>
                         <tr>
@@ -87,4 +90,4 @@ class GroupList extends Component {
     }
 }
 
-export default GroupList;
+export default withRouter(GroupList);

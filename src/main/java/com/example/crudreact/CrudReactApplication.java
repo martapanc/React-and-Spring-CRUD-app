@@ -9,5 +9,4 @@ public class CrudReactApplication {
     public static void main(String[] args) {
         SpringApplication.run(CrudReactApplication.class, args);
     }
-
 }

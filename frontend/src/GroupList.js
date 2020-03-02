@@ -3,13 +3,18 @@ import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link, withRouter } from 'react-router-dom';
 import { instanceOf } from 'prop-types';
-import { Cookies } from 'react-cookie';
+import { Cookies, withCookies } from 'react-cookie';
 
 class GroupList extends Component {
 
+    static propTypes = {
+        cookies: instanceOf(Cookies).isRequired
+    };
+
     constructor(props) {
         super(props);
-        this.state = {groups: [], isLoading: true};
+        const {cookies} = props;
+        this.state = {groups: [], csrfToken: cookies.get('XSRF-TOKEN'), isLoading: true};
         this.remove = this.remove.bind(this);
     }
 
@@ -26,6 +31,7 @@ class GroupList extends Component {
         await fetch(`/api/group/${id}`, {
             method: 'DELETE',
             headers: {
+                'X-XSRF-TOKEN': this.state.csrfToken,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
@@ -90,4 +96,4 @@ class GroupList extends Component {
     }
 }
 
-export default withRouter(GroupList);
+export default withCookies(withRouter(GroupList));
